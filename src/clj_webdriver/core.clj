@@ -201,12 +201,13 @@
    The `:profile` should be an instance of FirefoxProfile you wish to use.
    The `:cache-spec` can contain `:strategy`, `:args`, `:include` and/or `:exclude keys. See documentation on caching for more details."
   ([browser-spec]
-     (let [{:keys [browser profile cache-spec] :or {browser :firefox
+     (let [{:keys [browser profile chrome-profile cache-spec] :or {browser :firefox
                                                     profile nil
                                                     cache-spec {}}} browser-spec]
 
        (init-driver {:webdriver (new-webdriver* {:browser browser
-                                                 :profile profile})
+                                                 :profile profile
+                                                 :chrome-profile chrome-profile})
                      :cache-spec cache-spec}))))
 
 ;; Chrome binary, common location of Chromium on Linux
