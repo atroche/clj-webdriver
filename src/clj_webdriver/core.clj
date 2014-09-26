@@ -29,7 +29,7 @@
                                 OutputType NoSuchElementException Keys]
            [org.openqa.selenium.firefox FirefoxDriver]
            [org.openqa.selenium.ie InternetExplorerDriver]
-           [org.openqa.selenium.chrome ChromeDriver]
+           [org.openqa.selenium.chrome ChromeDriver ChromeOptions]
            [org.openqa.selenium.phantomjs PhantomJSDriver]
            [org.openqa.selenium.htmlunit HtmlUnitDriver]
            [org.openqa.selenium.support.ui Select]
@@ -182,10 +182,16 @@
 (defn new-webdriver*
   "Return a Selenium-WebDriver WebDriver instance, optionally configured to leverage a custom FirefoxProfile."
   ([browser-spec]
-     (let [{:keys [browser profile] :or {browser :firefox
-                                         profile nil}} browser-spec]
+     (let [{:keys [browser profile chrome-profile] :or {browser :firefox
+                                         profile nil chrome-profile nil}} browser-spec]
        (if-not profile
-         (.newInstance (webdriver-drivers (keyword browser)))
+         (if chrome-profile
+           (let [options (.newInstance ChromeOptions)
+                 extension-options (for [extension (:extensions chrome-profile)]
+                                     (str "load-extension=" extension))]
+             (.addArguments options extension-options)
+             (ChromeDriver. options))
+           (.newInstance (webdriver-drivers (keyword browser))))
          (FirefoxDriver. profile)))))
 
 (defn new-driver
